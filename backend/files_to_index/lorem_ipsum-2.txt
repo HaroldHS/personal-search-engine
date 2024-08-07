@@ -1,0 +1,11 @@
+This custom Lorem Ipsum file is intended to test the information retrieval algorithm for a query that results in multiple documents.
+
+Lorem Ipsum
+Lorem Ipsum
+Lorem Ipsum
+Lorem Ipsum
+Lorem Ipsum
+Lorem Ipsum
+Lorem Ipsum
+
+What is the problem with this file?
