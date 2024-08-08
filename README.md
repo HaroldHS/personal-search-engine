@@ -3,7 +3,7 @@ Personal Search Engine is a small scale "organic" search engine that is accessib
 
 ### Requirements
 * NodeJS (React Vite)
-* Flask
+* Python 3 (Flask)
 
 ### Installation
 ```bash

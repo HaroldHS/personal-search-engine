@@ -1,13 +1,36 @@
-// import { useState } from 'react'
+import { RouterProvider, createBrowserRouter, createRoutesFromElements, Route } from "react-router-dom";
+import { HashRouter, Routes } from 'react-router-dom';
 
-function App() {
-  // const [count, setCount] = useState(0)
+import Home from "./pages/Home";
 
-  return (
+// NOTE: change 'false' into 'true' in order to use HashRouter for single page build / application and vice versa
+const single_build = false;
+
+const page_router = createBrowserRouter(
+  createRoutesFromElements(
     <>
-      Hello World!
+      <Route path="/" element={<Home />} />
     </>
   )
+);
+
+function RouterForSingleFile() {
+  return (
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </HashRouter>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <>
+      {/* NOTE: RouterForSingleFile is intended for single page application (by using vite-single-file) */}
+      { single_build === false ? <RouterProvider router={page_router} /> : <RouterForSingleFile /> }
+    </>
+  );
+}
+
+export default App;
