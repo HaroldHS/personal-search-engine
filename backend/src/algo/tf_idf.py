@@ -1,3 +1,8 @@
+
+#
+# TF-IDF (Term Frequency - Inverse Document Frequency)
+#
+
 from math import log
 from collections import OrderedDict
 

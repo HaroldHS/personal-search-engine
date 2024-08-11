@@ -1,6 +1,7 @@
 from os import getcwd, name, path, scandir
 
 from src.parser.text_document_parser import parse_text_document_from_path
+from src.parser.html_document_parser import parse_html_document_from_path
 
 def traverse_and_tokenize_files_to_be_indexed(query, file_path=""):
     # Check if file_path is not defined
@@ -21,8 +22,8 @@ def traverse_and_tokenize_files_to_be_indexed(query, file_path=""):
 
     for entry in dir_obj:
         if entry.is_file() and entry.name.endswith(".html"):
-            # TODO: Implement and call html parser
-            continue
+            file_flag = True
+            doc_parsed = parse_html_document_from_path(file_path, entry.name)
         if entry.is_file() and entry.name.endswith(".txt"):
             file_flag = True
             doc_parsed = parse_text_document_from_path(file_path, entry.name)
