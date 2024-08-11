@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
 
 function SearchBox() {
 
@@ -16,9 +15,7 @@ function SearchBox() {
     };
 
     if(query !== "") {
-        return (
-            <Navigate to={`/result/`.concat(query)} replace />
-        );
+        window.location.href = "/result/".concat(query);
     }
 
     return (
@@ -26,16 +23,16 @@ function SearchBox() {
             {/* Desktop view */}
             <div className="max-lg:hidden">
                 <div className="grid grid-rows-1 grid-cols-4">
-                    <input className="col-span-3 p-2 mx-4 border-2 border-blue-600 rounded text-xl" type="text" id="desktop-query" name="desktop-query" />
-                    <SearchButton index={`1`} cssStyle={`text-xl border rounded`} clickHandler={() => updateQuery("desktop")}/>
+                    <input className="col-span-3 p-2 mr-4 border-red-600 border-2 rounded focus:border-red-600 text-xl" type="text" id="desktop-query" name="desktop-query" />
+                    <SearchButton index={`1`} cssStyle={`border-red-600 border-2 rounded hover:bg-red-600 hover:text-white text-xl`} clickHandler={() => updateQuery("desktop")}/>
                 </div>
             </div>
 
             {/* Mobile view */}
             <div className="lg:hidden">
                 <div className="grid grid-rows-2 grid-cols-1 place-items-center">
-                    <input className="w-full p-2 my-2 border-2 border-blue-600 rounded text-lg" type="text" id="mobile-query" name="mobile-query" />
-                    <SearchButton index={`2`} cssStyle={`p-2 text-lg border rounded`} clickHandler={() => updateQuery("mobile")}/>
+                    <input className="w-full p-2 my-2 border-2 border-red-600 rounded text-lg" type="text" id="mobile-query" name="mobile-query" />
+                    <SearchButton index={`2`} cssStyle={`bg-red-600 border-2 rounded text-white text-lg p-2`} clickHandler={() => updateQuery("mobile")}/>
                 </div>
             </div>
         </>
