@@ -7,6 +7,7 @@ from src.traverse_and_tokenize_files import traverse_and_tokenize_files_to_be_in
 from src.inverted_indexing import invert_index_files_tokens
 from src.algo.tf_idf import TFIDF
 from src.get_document_details import get_document_path_from_name
+from src.generate_tfidf_json import generate_tfidf_json_file
 
 app = Flask(__name__)
 
@@ -18,7 +19,6 @@ def main():
 
 @app.route("/search", methods=["GET", "POST", "OPTIONS"])
 def search():
-    res = {}
 
     """
     Steps of PSE (Personal Search Engine) search mechanism:
@@ -52,6 +52,40 @@ def search():
     doc_details = get_document_path_from_name(measure_tfidf, list_of_files_tokens)
 
     result = dumps(generate_basic_response("200", "OK", doc_details))
+    resp = Response(result)
+    ##########################################################################################################################
+    # NOTE: This is a bad practice, make sure to use proxy or rewrite the headers below when the code deployed to production #
+    ##########################################################################################################################
+    resp.headers["Access-Control-Allow-Origin"] = "*"
+    resp.mimetype = "application/json"
+
+    return resp
+
+@app.route("/add_web_page", methods=["POST", "OPTIONS"])
+def add_document():
+
+    if request.method == "POST":
+        data = request.get_json()
+    elif request.method == "OPTIONS":
+        # Preflight request
+        resp = Response("")
+        ##########################################################################################################################
+        # NOTE: This is a bad practice, make sure to use proxy or rewrite the headers below when the code deployed to production #
+        ##########################################################################################################################
+        resp.headers["Access-Control-Allow-Origin"] = "*"
+        resp.headers["Access-Control-Allow-Headers"] = "*"
+        resp.headers["Access-Control-Allow-Methods"] = "*"
+        return resp
+    else:
+        res = generate_basic_response("500", "Internal Server Error", "Invalid request method. POST is the only available request method.")
+        return jsonify(res)
+
+    gen = generate_tfidf_json_file(data)
+
+    if gen:
+        result = dumps(generate_basic_response("200", "OK", "Document has been added"))
+    else:
+        result = dumps(generate_basic_response("500", "Internal Server Error", "Failed to generate tdidf"))
     resp = Response(result)
     ##########################################################################################################################
     # NOTE: This is a bad practice, make sure to use proxy or rewrite the headers below when the code deployed to production #

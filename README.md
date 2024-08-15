@@ -37,7 +37,7 @@ cd ./backend
 python3 main.py
 ```
 
-> Note: To deactivate virtual environment, just run `deactivate` command in terminal/command prompt.
+> Note: To deactivate virtual environment, just run `deactivate` command in terminal/command prompt. In addition, don't forget to create `tfidf_json` folder inside `backend` folder in order to accommodate documents added via `/add_web_page`.
 
 ### License
 This project is under [GPL-3.0](./LICENSE) license.
