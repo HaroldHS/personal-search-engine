@@ -2,8 +2,14 @@
 Personal Search Engine is a small scale "organic" search engine that is accessible via your local machine.
 
 ### Requirements
+
+##### Frontend
 * NodeJS (React Vite)
+
+##### Backend
 * Python 3 (Flask)
+* Java 17 (Spring)
+* MySQL 8
 
 ### Installation
 ```bash
@@ -11,8 +17,8 @@ Personal Search Engine is a small scale "organic" search engine that is accessib
 cd ./frontend
 npm install
 
-# 2. Backend installation
-cd ./backend
+# 2.0 Backend installation (with Python Flask)
+cd ./backend/flask
 
 #######################################
 #### 2.1 Setup virtual environment ####
@@ -24,6 +30,8 @@ source ./env/Scripts/activate # windows
 #######################################
 
 pip install -r requirements.txt
+
+# 2.1 Backend installation (with Java Spring)
 ```
 
 ### Run the servers
@@ -32,9 +40,14 @@ pip install -r requirements.txt
 cd ./frontend
 npm run dev
 
-# 2. Backend
-cd ./backend
+# 2.0 Backend (Python Flask)
+cd ./backend/flask
 python3 main.py
+
+# 2.1 Backend (Java Spring)
+cd ./backend/spring
+./gradlew bootRun    # linux
+gradlew.bat bootRun  # windows
 ```
 
 > Note: To deactivate virtual environment, just run `deactivate` command in terminal/command prompt. In addition, don't forget to create `tfidf_json` folder inside `backend` folder in order to accommodate documents added via `/add_web_page`.
