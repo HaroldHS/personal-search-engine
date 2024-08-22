@@ -15,6 +15,7 @@ public class SecurityConfig {
         return http.authorizeHttpRequests(
             auth -> auth.requestMatchers("/api/v1/").permitAll()
                         .requestMatchers("/api/v1/search").permitAll()
+                        .requestMatchers("/api/v1/add_url").permitAll()
         ).csrf(csrf -> csrf.disable())
         .httpBasic(basic -> basic.disable())
         .build();

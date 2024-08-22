@@ -9,6 +9,9 @@ public class SearchRequest {
 
     private String query;
 
+    public SearchRequest() {
+    }
+
     public SearchRequest(String query) {
         this.query = query;
     }
