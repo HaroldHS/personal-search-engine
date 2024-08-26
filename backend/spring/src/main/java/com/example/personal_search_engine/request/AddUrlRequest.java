@@ -7,12 +7,14 @@ import lombok.Setter;
 @Setter
 public class AddUrlRequest {
 
+    private String name;
     private String url;
 
     public AddUrlRequest() {
     }
 
-    public AddUrlRequest(String url) {
+    public AddUrlRequest(String url, String name) {
+        this.name = name;
         this.url = url;
     }
 }

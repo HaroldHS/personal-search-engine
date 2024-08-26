@@ -30,6 +30,9 @@ public class PageUrl {
     @Column(name = "page_url", length = 1024)
     private String url;
 
+    @Column(name = "page_url_hash", length = 256)
+    private String md5;
+
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
     @Column(name = "page_tokens", nullable = false)
     private List<String> tokens;
@@ -37,10 +40,11 @@ public class PageUrl {
     public PageUrl() {
     }
 
-    public PageUrl(Integer id, String name, String url, List<String> tokens) {
+    public PageUrl(Integer id, String name, String url, String md5, List<String> tokens) {
         this.id = id;
         this.name = name;
         this.url = url;
+        this.md5 = md5;
         this.tokens = tokens;
     }
 

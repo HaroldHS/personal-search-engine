@@ -20,9 +20,9 @@ npm install
 # 2.0 Backend installation (with Python Flask)
 cd ./backend/flask
 
-#######################################
-#### 2.1 Setup virtual environment ####
-#######################################
+#########################################
+#### 2.0.1 Setup virtual environment ####
+#########################################
 python3 -m venv env
 # activate virtual environment
 source ./env/bin/activate     # linux
@@ -32,7 +32,24 @@ source ./env/Scripts/activate # windows
 pip install -r requirements.txt
 
 # 2.1 Backend installation (with Java Spring)
+cd ./backend/spring
+./gradlew build --refresh-dependencies   # linux
+gradlew.bat build --refresh-dependencies # windows
 ```
+
+### Environment variables for backend
+
+In order to run the backend server properly, these environment variables are important and must be included.
+In contrast, you can modify these variables according to your purpose inside `application.properties`.
+
+```bash
+MYSQL_DATABASE = #{mysql database name}
+MYSQL_USER = #{mysql user}
+MYSQL_USER_PASSWORD = #{mysql password for the specified user}
+PERSONAL_SEARCH_ENGINE_TFIDF_PATH = #{local path for saving tfidf results}
+```
+
+> Note: `PERSONAL_SEARCH_ENGINE_TFIDF_PATH` is also defined and used in `AllServicesImpl.java`. If you want to change the variable name, make sure to update it in `application.properties` and `@Value` annotation in `AllServiceImpl.java`.
 
 ### Run the servers
 ```bash
