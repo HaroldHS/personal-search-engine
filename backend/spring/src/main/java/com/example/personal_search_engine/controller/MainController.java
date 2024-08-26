@@ -1,6 +1,7 @@
 package com.example.personal_search_engine.controller;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +28,9 @@ public class MainController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/api/v1/search")
+    @PostMapping("/api/v1/search")
     public ResponseEntity<Object> search(@RequestBody SearchRequest searchRequest) {
-        HashMap<String, Object> response = new HashMap<String, Object>();
+        List<HashMap<String, String>> response = allServices.queryResult(searchRequest);
         return ResponseEntity.ok(response);
     }
 

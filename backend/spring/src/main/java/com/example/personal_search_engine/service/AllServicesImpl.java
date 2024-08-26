@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-// import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
@@ -22,8 +22,8 @@ import org.springframework.stereotype.Service;
 import com.example.personal_search_engine.helper.Hashing;
 import com.example.personal_search_engine.helper.TFIDF;
 import com.example.personal_search_engine.helper.TFIDFImpl;
-import com.example.personal_search_engine.model.PageUrl;
-import com.example.personal_search_engine.repository.PageUrlRepository;
+import com.example.personal_search_engine.model.Page;
+import com.example.personal_search_engine.repository.PageRepository;
 import com.example.personal_search_engine.request.AddUrlRequest;
 import com.example.personal_search_engine.request.SearchRequest;
 
@@ -36,11 +36,30 @@ public class AllServicesImpl implements AllServices {
     private String tfidfPath;
 
     @Autowired
-    private PageUrlRepository pageUrlRepository;
+    private PageRepository pageRepository;
 
     @Override
-    public HashMap<String, Object> queryResult(SearchRequest searchRequest) {
-        HashMap<String, Object> result = new HashMap<String, Object>();
+    public List<HashMap<String, String>> queryResult(SearchRequest searchRequest) {
+        List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
+
+        String[] queryTokens = searchRequest.getQuery().split("[,\\.\\s]");
+        List<Integer> listOfPageIdByToken = new ArrayList<Integer>();
+        for(String s: queryTokens) {
+                List<Integer> pageIdByTokenResult = pageRepository.findPageIdByToken(s);
+                for(Integer id: pageIdByTokenResult) {
+                    listOfPageIdByToken.add(id);
+                }
+        }
+
+        for(Integer id: listOfPageIdByToken) {
+            Page pageResult = pageRepository.getById(id);
+            
+            HashMap<String, String> page = new HashMap<String, String>();
+            page.put("document name", pageResult.getName());
+            page.put("document url", pageResult.getUrl());
+
+            result.add(page);
+        }
 
         return result;
     }
@@ -89,12 +108,12 @@ public class AllServicesImpl implements AllServices {
                 ja.put(uniqueTokens);
                 ja.put(invertIndex);
                 // 5. Save PageUrl model into database via repository
-                PageUrl pageUrl = new PageUrl();
-                pageUrl.setName(addUrlRequest.getName());
-                pageUrl.setUrl(addUrlRequest.getUrl());
-                pageUrl.setMd5(urlHash);
-                pageUrl.setTokens(uniqueTokens);
-                pageUrlRepository.save(pageUrl);
+                Page page = new Page();
+                page.setName(addUrlRequest.getName());
+                page.setUrl(addUrlRequest.getUrl());
+                page.setMd5(urlHash);
+                page.setTokens(uniqueTokens);
+                pageRepository.save(page);
                 // 6. Create JSON file for tfidf and save it into specified location with hashing as its name
                 // TODO: Refactor the code below in order to prevent race condition
                 FileWriter jsonFile = new FileWriter(this.tfidfPath.concat("/"+urlHash+".json"));
