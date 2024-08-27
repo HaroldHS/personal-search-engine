@@ -5,8 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -42,17 +44,42 @@ public class AllServicesImpl implements AllServices {
     public List<HashMap<String, String>> queryResult(SearchRequest searchRequest) {
         List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
 
-        String[] queryTokens = searchRequest.getQuery().split("[,\\.\\s]");
-        List<Integer> listOfPageIdByToken = new ArrayList<Integer>();
-        for(String s: queryTokens) {
-                List<Integer> pageIdByTokenResult = pageRepository.findPageIdByToken(s);
-                for(Integer id: pageIdByTokenResult) {
-                    listOfPageIdByToken.add(id);
+        String[] queryTokens = searchRequest.getQuery().toLowerCase().split("[,\\.\\s]");
+
+        // For each token, count its tfidf
+        TFIDF tfidf = new TFIDFImpl();
+        Map<Float, Integer> tfidfForSorting = new HashMap<Float, Integer>();
+        for(String token: queryTokens) {
+            // NOTE: To prevent repetitive counting
+            Integer idfTotalPage = pageRepository.getAllPageId();
+            Integer idfTotalPageFromToken = pageRepository.countPageIdByToken(token);
+
+            // If the token is not available in any documents / pages, then just skip it
+            if(idfTotalPageFromToken == 0) {
+                continue;
+            }
+
+            // Get all pages where the token is included
+            List<Integer> pageIdByTokenResult = pageRepository.findPageIdByToken(token);
+            // Count the tfidf from the pair of token and page id
+            for(Integer pageId: pageIdByTokenResult) {
+                Integer tfCountTokenInPage = pageRepository.countTokenInPage(pageId, token);
+                Integer tfTotalOfTokensInPage = pageRepository.totalOfTokensInPage(pageId);
+                Float tfidfResult = tfidf.countTFIDF(tfCountTokenInPage, tfTotalOfTokensInPage, idfTotalPage, idfTotalPageFromToken);
+
+                // If tfidf is not 0, then append the page.page_id according to tfidf
+                if(Float.compare(tfidfResult, 0f) != 0) {
+                    tfidfForSorting.put(tfidfResult, pageId);
                 }
+            }
         }
 
-        for(Integer id: listOfPageIdByToken) {
-            Page pageResult = pageRepository.getById(id);
+        // Sort page.page_id according to tfidf score decreasingly
+        ArrayList<Float> sordtedTFIDFResult = new ArrayList<Float>(tfidfForSorting.keySet());
+        Collections.sort(sordtedTFIDFResult);
+
+        for(Float f: sordtedTFIDFResult) {
+            Page pageResult = pageRepository.getById(tfidfForSorting.get(f));
             
             HashMap<String, String> page = new HashMap<String, String>();
             page.put("document name", pageResult.getName());
@@ -90,7 +117,7 @@ public class AllServicesImpl implements AllServices {
             }
 
             try {
-                String content = doc.body().text();
+                String content = doc.body().text().toLowerCase();
                 TFIDF tfidf = new TFIDFImpl();
 
                 // 1. Obtain tokens

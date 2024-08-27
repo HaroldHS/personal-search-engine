@@ -26,9 +26,9 @@ public class TFIDFImpl implements TFIDF {
 
     public HashMap<String, Integer> invertIndexing(String[] tokens) {
         HashMap<String, Integer> result = new HashMap<String, Integer>();
-        int tokensLength = tokens.length;
+        Integer tokensLength = tokens.length;
 
-        for(int i=0; i<tokensLength; i++) {
+        for(Integer i=0; i<tokensLength; i++) {
             // Instead of saving the token position, just save the token occurence
             if(result.get(tokens[i]) == null) {
                 // ArrayList<Integer> invertIndexContainer = new ArrayList<Integer>();
@@ -50,5 +50,11 @@ public class TFIDFImpl implements TFIDF {
         }
 
         return result;
+    }
+
+    public Float countTFIDF(Integer countTokenInPage, Integer totalOfTokensInPage, Integer getAllPageId, Integer countPageIdByToken) {
+        Float tf = (float) countTokenInPage / totalOfTokensInPage;
+        Float idf = (float) Math.log(getAllPageId / countPageIdByToken);
+        return tf*idf;
     }
 }

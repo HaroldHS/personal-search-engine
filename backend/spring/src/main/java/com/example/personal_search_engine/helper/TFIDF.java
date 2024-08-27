@@ -9,4 +9,5 @@ public interface TFIDF {
     public String[] getTokens(String content);
     public List<String> listOfUniqueTokens(String[] tokens);
     public HashMap<String, Integer> invertIndexing(String[] tokens);
+    public Float countTFIDF(Integer countTokenInPage, Integer totalOfTokensInPage, Integer getAllPageId, Integer countPageIdByToken);
 }
