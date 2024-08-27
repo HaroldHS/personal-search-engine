@@ -66,11 +66,7 @@ public class AllServicesImpl implements AllServices {
                 Integer tfCountTokenInPage = pageRepository.countTokenInPage(pageId, token);
                 Integer tfTotalOfTokensInPage = pageRepository.totalOfTokensInPage(pageId);
                 Float tfidfResult = tfidf.countTFIDF(tfCountTokenInPage, tfTotalOfTokensInPage, idfTotalPage, idfTotalPageFromToken);
-
-                // If tfidf is not 0, then append the page.page_id according to tfidf
-                if(Float.compare(tfidfResult, 0f) != 0) {
-                    tfidfForSorting.put(tfidfResult, pageId);
-                }
+                tfidfForSorting.put(tfidfResult, pageId);
             }
         }
 

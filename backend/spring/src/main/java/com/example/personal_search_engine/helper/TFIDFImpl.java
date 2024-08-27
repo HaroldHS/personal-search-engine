@@ -9,7 +9,8 @@ import java.util.Set;
 public class TFIDFImpl implements TFIDF {
 
     public String[] getTokens(String content) {
-        String[] result = content.split("[,\\.\\s]");
+        // Note: Split page content by ,[].;#|!@$%^&*()\s
+        String[] result = content.split("[,\\[\\]\\.\\;\\#\\|\\!\\@\\$\\%\\^\\&\\*\\(\\)\\s]");
         return result;
     }
 
@@ -54,7 +55,8 @@ public class TFIDFImpl implements TFIDF {
 
     public Float countTFIDF(Integer countTokenInPage, Integer totalOfTokensInPage, Integer getAllPageId, Integer countPageIdByToken) {
         Float tf = (float) countTokenInPage / totalOfTokensInPage;
-        Float idf = (float) Math.log(getAllPageId / countPageIdByToken);
+        float floatDivision = (float) getAllPageId / countPageIdByToken;
+        Float idf = (float) Math.log(floatDivision);
         return tf*idf;
     }
 }
