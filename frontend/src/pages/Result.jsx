@@ -8,7 +8,7 @@ function Result(props) {
     let [queryResult, setQueryResult] = useState({});
 
     useEffect(() => {
-        fetch("http://localhost:5000/search", {
+        fetch("http://localhost:8080/api/v1/search", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -16,7 +16,7 @@ function Result(props) {
             body: JSON.stringify({"query": query})
         })
         .then((resp) => resp.json())
-        .then((data) => data["response code"] === "200" ? setQueryResult(data["response body"]) : {});
+        .then((data) => setQueryResult(data));
     }, []);
 
     const emptyResult = () => {
@@ -31,18 +31,14 @@ function Result(props) {
 
     // eslint-disable-next-line react/prop-types
     const QueryResultContainer = ({index, cssStyle}) => {
-        // NOTE: For windows, replace C:\\ with C:\\\\ in order to prevent escaping sequence bug
-        const reg = /^[A-Z]{0,1}:\\/;
-        let document_path = queryResult[index]["document path"];
-        let drive_match = document_path.match(reg)[0];
-        let final_document_path = document_path.replace(drive_match, "C:\\\\");
+        let document_path = queryResult[index]["document url"];
         return (
             <div className={cssStyle}>
                 <b>{query}</b> inside {queryResult[index]["document name"]}
                 <br /><br />
-                File location: <b className="text-red-500">{final_document_path}</b>
+                File location: <b className="text-red-500">{document_path}</b>
                 <br /><br />
-                Click <a href={final_document_path} target="_blank" rel="noopener"><u>here</u></a> to open the file
+                Click <a href={document_path} target="_blank" rel="noopener"><u>here</u></a> to open the file
             </div>
         );
     }

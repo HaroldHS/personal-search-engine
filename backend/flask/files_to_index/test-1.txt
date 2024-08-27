@@ -1,1 +1,0 @@
-This sample text file is generated for testing tf-idf algorithm in the backend system.
