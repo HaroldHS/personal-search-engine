@@ -50,11 +50,11 @@ Page Name | Page URL
 In order to run the backend server properly, these environment variables are important and must be included.
 In contrast, you can modify these variables according to your purpose inside `application.properties`.
 
-```bash
-MYSQL_DATABASE = #{mysql database name}
-MYSQL_USER = #{mysql user}
-MYSQL_USER_PASSWORD = #{mysql password of specified user}
-PERSONAL_SEARCH_ENGINE_TFIDF_PATH = #{directory path in order to save tfidf results}
+```text
+MYSQL_DATABASE = #{environment variable for mysql database name}
+MYSQL_USER = #{environment variable for mysql user}
+MYSQL_USER_PASSWORD = #{environment variable for mysql password of specified user}
+PERSONAL_SEARCH_ENGINE_TFIDF_PATH = #{environment variable for directory path to save tfidf results}
 ```
 
 > Note: `PERSONAL_SEARCH_ENGINE_TFIDF_PATH` is also defined and used in `AllServicesImpl.java`. If you want to change the variable name, make sure to update it in `application.properties` and `@Value` annotation in `AllServiceImpl.java`.

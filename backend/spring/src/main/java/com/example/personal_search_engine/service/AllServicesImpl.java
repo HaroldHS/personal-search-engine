@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 import com.example.personal_search_engine.helper.Hashing;
 import com.example.personal_search_engine.helper.TFIDF;
 import com.example.personal_search_engine.helper.TFIDFImpl;
+import com.example.personal_search_engine.helper.TextSummary;
+import com.example.personal_search_engine.helper.TextSummaryImpl;
 import com.example.personal_search_engine.model.Page;
 import com.example.personal_search_engine.repository.PageRepository;
 import com.example.personal_search_engine.request.AddUrlRequest;
@@ -74,12 +76,20 @@ public class AllServicesImpl implements AllServices {
         ArrayList<Float> sordtedTFIDFResult = new ArrayList<Float>(tfidfForSorting.keySet());
         Collections.sort(sordtedTFIDFResult);
 
+        // Find the text summary and append them for each page/document
+        TextSummary textSummary = new TextSummaryImpl();
         for(Float f: sordtedTFIDFResult) {
             Page pageResult = pageRepository.getById(tfidfForSorting.get(f));
+            String contentSummary = textSummary.getTextSummary(
+                tfidfPath.concat("\\").concat(pageResult.getMd5()).concat(".json"),
+                tfidfPath.concat("\\").concat(pageResult.getMd5()).concat(".txt"),
+                queryTokens
+            );
             
             HashMap<String, String> page = new HashMap<String, String>();
             page.put("document name", pageResult.getName());
             page.put("document url", pageResult.getUrl());
+            page.put("document summary", contentSummary);
 
             result.add(page);
         }
@@ -108,6 +118,7 @@ public class AllServicesImpl implements AllServices {
             if(addUrlRequest.getUrl().startsWith("http://") || addUrlRequest.getUrl().startsWith("https://")) {
                 doc = Jsoup.connect(addUrlRequest.getUrl()).get();
             } else {
+                // TODO: This code block could be vulnerable to modified XS-Search/XS-Leak technique, replace it later
                 File fileInput = new File(addUrlRequest.getUrl());
                 doc = Jsoup.parse(fileInput, "UTF-8");
             }
@@ -117,10 +128,10 @@ public class AllServicesImpl implements AllServices {
                 TFIDF tfidf = new TFIDFImpl();
 
                 // 1. Obtain tokens
-                String[] tokens = tfidf.getTokens(content);
+                List<String> tokens = tfidf.getTokens(content);
                 List<String> uniqueTokens = tfidf.listOfUniqueTokens(tokens);
                 // 2. Invert indexing
-                HashMap<String, Integer> invertIndex = tfidf.invertIndexing(tokens);
+                HashMap<String, ArrayList<Integer>> invertIndex = tfidf.invertIndexing(tokens);
                 // 3. Generate hash for URL
                 String urlHash = Hashing.getMD5Hash(addUrlRequest.getUrl());
                 // 4. Generate JSON file
@@ -142,6 +153,11 @@ public class AllServicesImpl implements AllServices {
                 FileWriter jsonFile = new FileWriter(this.tfidfPath.concat("/"+urlHash+".json"));
                 jsonFile.write(ja.toString());
                 jsonFile.close();
+                // 7. Create a text file to save the page content for text summary
+                // TODO: Refactor the code below in order to prevent race condition
+                FileWriter textFile = new FileWriter(this.tfidfPath.concat("/"+urlHash+".txt"));
+                textFile.write(content);
+                textFile.close();
 
                 resultMessage.append("tfidf successfull");
             } catch (Exception e) {

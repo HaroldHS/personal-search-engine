@@ -40,7 +40,9 @@ function Result(props) {
                 <br />
                 <b className="text-red-500">{document_path.substring(0,30)}...</b>
                 <br /><br />
-                {/* TODO: Include subtext of a page including all tokens */}
+                <p>
+                    {queryResult[index]["document summary"]}
+                </p>
             </div>
         );
     }

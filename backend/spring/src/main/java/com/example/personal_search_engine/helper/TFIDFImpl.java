@@ -5,16 +5,24 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class TFIDFImpl implements TFIDF {
 
-    public String[] getTokens(String content) {
-        // Note: Split page content by ,[].;#|!@$%^&*()\s
-        String[] result = content.split("[,\\[\\]\\.\\;\\#\\|\\!\\@\\$\\%\\^\\&\\*\\(\\)\\s]");
+    public List<String> getTokens(String content) {
+        List<String> result = new ArrayList<String>();
+
+        Pattern tokenRegex = Pattern.compile("[a-zA-Z0-9]+");
+        Matcher textMatch = tokenRegex.matcher(content);
+        while (textMatch.find()) {
+            result.add(textMatch.group());
+        }
+
         return result;
     }
 
-    public List<String> listOfUniqueTokens(String[] tokens) {
+    public List<String> listOfUniqueTokens(List<String> tokens) {
         Set<String> setOfTokens = new HashSet<String>();
         
         for(String s: tokens) {
@@ -25,28 +33,29 @@ public class TFIDFImpl implements TFIDF {
         return result;
     }
 
-    public HashMap<String, Integer> invertIndexing(String[] tokens) {
-        HashMap<String, Integer> result = new HashMap<String, Integer>();
-        Integer tokensLength = tokens.length;
+    public HashMap<String, ArrayList<Integer>> invertIndexing(List<String> tokens) {
+        HashMap<String, ArrayList<Integer>> result = new HashMap<String, ArrayList<Integer>>();
+        Integer tokensLength = tokens.size();
 
         for(Integer i=0; i<tokensLength; i++) {
-            // Instead of saving the token position, just save the token occurence
-            if(result.get(tokens[i]) == null) {
-                // ArrayList<Integer> invertIndexContainer = new ArrayList<Integer>();
-                // invertIndexContainer.add(i);
-                // result.put(tokens[i], invertIndexContainer);
+            if(result.get(tokens.get(i)) == null) {
+                ArrayList<Integer> invertIndexContainer = new ArrayList<Integer>();
+                invertIndexContainer.add(i);
+                result.put(tokens.get(i), invertIndexContainer);
 
-                Integer tokenOccurence = 0;
-                tokenOccurence += 1;
-                result.put(tokens[i], tokenOccurence);
+                // Instead of saving the token position, just save the token occurence
+                // Integer tokenOccurence = 0;
+                // tokenOccurence += 1;
+                // result.put(tokens[i], tokenOccurence);
             } else {
-                // ArrayList<Integer> container = result.get(tokens[i]);
-                // container.add(i);
-                // result.put(tokens[i], container);
+                ArrayList<Integer> container = result.get(tokens.get(i));
+                container.add(i);
+                result.put(tokens.get(i), container);
 
-                Integer tokenOccurence = result.get(tokens[i]);
-                tokenOccurence += 1;
-                result.put(tokens[i], tokenOccurence);
+                // Instead of saving the token position, just save the token occurence
+                // Integer tokenOccurence = result.get(tokens[i]);
+                // tokenOccurence += 1;
+                // result.put(tokens[i], tokenOccurence);
             }
         }
 

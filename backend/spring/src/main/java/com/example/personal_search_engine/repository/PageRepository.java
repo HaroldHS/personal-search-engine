@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import com.example.personal_search_engine.model.Page;
@@ -38,6 +39,7 @@ public interface PageRepository extends JpaRepository<Page, Integer> {
     @Query(value = "SELECT DISTINCT p.page_page_id FROM page_tokens as p WHERE p.page_tokens = :token", nativeQuery = true)
     List<Integer> findPageIdByToken(String token);
 
-    Page getById(Integer id);
+    @NonNull
+    Page getById(@NonNull Integer id);
 
 }
