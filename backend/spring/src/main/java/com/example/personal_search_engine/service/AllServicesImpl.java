@@ -22,10 +22,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.example.personal_search_engine.helper.Hashing;
+import com.example.personal_search_engine.helper.Lexer;
 import com.example.personal_search_engine.helper.TFIDF;
-import com.example.personal_search_engine.helper.TFIDFImpl;
 import com.example.personal_search_engine.helper.TextSummary;
-import com.example.personal_search_engine.helper.TextSummaryImpl;
 import com.example.personal_search_engine.model.Page;
 import com.example.personal_search_engine.repository.PageRepository;
 import com.example.personal_search_engine.request.AddUrlRequest;
@@ -49,7 +48,6 @@ public class AllServicesImpl implements AllServices {
         String[] queryTokens = searchRequest.getQuery().toLowerCase().split("[,\\.\\s]");
 
         // For each token, count its tfidf
-        TFIDF tfidf = new TFIDFImpl();
         Map<Float, Integer> tfidfForSorting = new HashMap<Float, Integer>();
         for(String token: queryTokens) {
             // NOTE: To prevent repetitive counting
@@ -67,7 +65,7 @@ public class AllServicesImpl implements AllServices {
             for(Integer pageId: pageIdByTokenResult) {
                 Integer tfCountTokenInPage = pageRepository.countTokenInPage(pageId, token);
                 Integer tfTotalOfTokensInPage = pageRepository.totalOfTokensInPage(pageId);
-                Float tfidfResult = tfidf.countTFIDF(tfCountTokenInPage, tfTotalOfTokensInPage, idfTotalPage, idfTotalPageFromToken);
+                Float tfidfResult = TFIDF.countTFIDF(tfCountTokenInPage, tfTotalOfTokensInPage, idfTotalPage, idfTotalPageFromToken);
                 tfidfForSorting.put(tfidfResult, pageId);
             }
         }
@@ -77,10 +75,9 @@ public class AllServicesImpl implements AllServices {
         Collections.sort(sordtedTFIDFResult);
 
         // Find the text summary and append them for each page/document
-        TextSummary textSummary = new TextSummaryImpl();
         for(Float f: sordtedTFIDFResult) {
             Page pageResult = pageRepository.getById(tfidfForSorting.get(f));
-            String contentSummary = textSummary.getTextSummary(
+            String contentSummary = TextSummary.getTextSummary(
                 tfidfPath.concat("\\").concat(pageResult.getMd5()).concat(".json"),
                 tfidfPath.concat("\\").concat(pageResult.getMd5()).concat(".txt"),
                 queryTokens
@@ -125,13 +122,16 @@ public class AllServicesImpl implements AllServices {
 
             try {
                 String content = doc.body().text().toLowerCase();
-                TFIDF tfidf = new TFIDFImpl();
+
+                if (content.equals("") || content.equals(" ")) {
+                    throw new Exception();
+                }
 
                 // 1. Obtain tokens
-                List<String> tokens = tfidf.getTokens(content);
-                List<String> uniqueTokens = tfidf.listOfUniqueTokens(tokens);
+                String[] tokens = Lexer.getAlpahNumericTokens(content);
+                List<String> uniqueTokens = TFIDF.listOfUniqueTokens(tokens);
                 // 2. Invert indexing
-                HashMap<String, ArrayList<Integer>> invertIndex = tfidf.invertIndexing(tokens);
+                HashMap<String, ArrayList<Integer>> invertIndex = TFIDF.invertIndexing(tokens);
                 // 3. Generate hash for URL
                 String urlHash = Hashing.getMD5Hash(addUrlRequest.getUrl());
                 // 4. Generate JSON file
@@ -156,7 +156,7 @@ public class AllServicesImpl implements AllServices {
                 // 7. Create a text file to save the page content for text summary
                 // TODO: Refactor the code below in order to prevent race condition
                 FileWriter textFile = new FileWriter(this.tfidfPath.concat("/"+urlHash+".txt"));
-                textFile.write(content);
+                textFile.write(Lexer.getContentFromLexerTokens(tokens));
                 textFile.close();
 
                 resultMessage.append("tfidf successfull");
