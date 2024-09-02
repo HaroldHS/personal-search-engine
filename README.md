@@ -1,5 +1,7 @@
 # personal-search-engine
-Personal Search Engine is a small scale "organic" search engine that is accessible via your local machine.
+Personal Search Engine is a small scale "organic" search engine that is accessible via your local machine. The search engine uses TF-IDF algorithm for searching keywords / tokens / terms inside documents / web pages. However, since the project is a small scaled project, manual web pages indexing is needed in order to make the search engine works (look at `Databse page setup` section).
+
+> Note: This project is still on development and the current code base is intended for prototyping. Don't deploy this project on production server/service.
 
 ### Requirements
 
@@ -32,7 +34,7 @@ python3 SETUP.py # Put arguments here #
 
 ### Database page setup
 
-You can read a csv file containing web page name and url in order to be displayed by backend server. Below is the intended format of the csv file:
+For manual indexing, you can read a csv file containing web page name and url in order to be displayed by backend server. Below is the intended format of the csv file:
 
 ```text
 Page Name | Page URL
@@ -48,7 +50,7 @@ Page Name | Page URL
 ### Environment variables for backend
 
 In order to run the backend server properly, these environment variables are important and must be included.
-In contrast, you can modify these variables according to your purpose inside `application.properties`.
+In contrast, you can modify these variables according to your purpose in `application.properties`.
 
 ```text
 MYSQL_DATABASE = #{environment variable for mysql database name}

@@ -19,13 +19,35 @@ function Result(props) {
         .then((data) => setQueryResult(data));
     }, []);
 
+    const listOfResultNotFound = [
+        "Internet connection is not available",
+        "No related keywords/tokens/terms in any documents",
+        "Server is not updated, as a result, documents which might include keywords/tokens/terms is not available",
+        "In order to improve the search result, use specific keyword/token/term that is unique from a document"
+    ];
+    
     const emptyResult = () => {
         return (
-            <div className="w-full h-screen grid grid-rows-1 grid-cols-1 place-items-center font-mono">
-                <div className="text-red-700 lg:text-6xl max-lg:text-xl">
-                    Result Not Found
+            <>
+                <div className="w-full grid grid-cols-1 place-items-left font-mono lg:p-4 max-lg:p-2">
+                    <SearchBox result_search_box={true} result_search_value={query} /><br />
+                    <h1 className="text-red-600 lg:text-xl lg:my-4 max-lg:text-lg max-lg:my-2">Result not found.</h1><br /><br />
+                    <p className="font-bold">
+                        For information, there are several reasons why the result is empty:
+                        <div className="lg:mx-8">
+                            <ul className="list-disc">
+                                {
+                                    listOfResultNotFound.map((data, index) => (
+                                        <li key={index} className="hover:underline">
+                                            {data}
+                                        </li>
+                                    ))
+                                }
+                            </ul>
+                        </div>
+                    </p>
                 </div>
-            </div>
+            </>
         );
     }
 

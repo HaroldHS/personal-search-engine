@@ -3,7 +3,6 @@ import { HashRouter, Routes } from 'react-router-dom';
 
 import Home from "./pages/Home";
 import Result from "./pages/Result";
-import AddWebPage from "./pages/AddWebPage";
 
 // NOTE: change 'false' into 'true' in order to use HashRouter for single page build / application and vice versa
 const single_build = false;
@@ -21,7 +20,6 @@ const page_router = createBrowserRouter(
     <>
       <Route path="/" element={<Home />} />
       <Route path="result/:query" element={<ResultPage />} />
-      <Route path="add_web_page" element={<AddWebPage />} />
     </>
   )
 );
